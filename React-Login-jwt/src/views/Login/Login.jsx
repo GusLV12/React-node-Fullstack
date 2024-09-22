@@ -1,18 +1,26 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './Login.css'; 
 import { useRequest } from '../../hooks/useRequest';
 import { validatelogin } from '../../Endpoints/login';
+import { useNavigate } from 'react-router-dom';
 
 export const Login = () => {
   const [formData, setFormData] = useState({
     username: '',
     password: ''
   });
+  const navigate = useNavigate();
   const {response, loading, error, makeRequest} = useRequest(validatelogin(formData));
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    makeRequest();
+    // localStorage.clear();
+    await makeRequest();
+    if(response?.token) {
+      localStorage.setItem('token', response.token);
+      console.log('Login exitoso, token guardado:', response.token);
+      navigate('/home');
+    }
     console.log('Respusta de la peticion:', response);
   };
 
@@ -24,6 +32,11 @@ export const Login = () => {
       [name]: value
     }));
   };
+
+  useEffect(() => {
+    console.log('Respuesta:', response);
+    console.log('Token Front: ', response?.token);
+  },[response]);
 
   return (
     <div className="login-container">
@@ -50,7 +63,6 @@ export const Login = () => {
         />
 
         <button type="submit">Login</button>
-        
         {loading && <p>Loading...</p>}
         {error && <p>Error: {error}</p>}
       </form>

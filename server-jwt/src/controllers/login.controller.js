@@ -1,4 +1,8 @@
 import { pool } from '../db.js';
+import jwt from 'jsonwebtoken';
+import config from '../config.js';
+
+const { SECRET } = config;
 
 // Controlador para la ruta POST '/login'
 export const accesLogin = async (req, res) => {
@@ -10,7 +14,8 @@ export const accesLogin = async (req, res) => {
     if (result[0].length === 0) {
       return res.status(404).json({ message: 'Usuario o contraseña incorrectos' });
     } else {
-      return res.status(200).json({ message: 'Login exitoso', user: result[0] });
+      const token = await jwt.sign({ username, password }, SECRET, { expiresIn: '1h' });
+      return res.status(200).json({ message: 'Login exitoso', user: result[0], token });
     }
   } catch (error) {
     return res.status(500).json({ message: 'Error al obtener los datos de login', error: error.message });

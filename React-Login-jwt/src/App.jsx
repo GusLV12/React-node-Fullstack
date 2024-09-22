@@ -1,9 +1,9 @@
-import { Login, } from "./views";
+import { RoutesViews } from "./routes/Routes";
 
 const App = () => {
   return (
     <>
-      <Login />
+      <RoutesViews />
     </>
   );
 };
